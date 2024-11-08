@@ -1,0 +1,13 @@
+sudo systemctl restart network-manager    #restarts network-manager (run if network-manager does not work)
+
+python3 joystick.py    #manually starts the car controls for wireless controller (in ~/sunriseRobot/app_SunriseRobot)
+
+source /opt/ros/foxy/setup.bash    #sources terminal window
+
+colcon build    #build workspace
+
+
+ll /dev/oradar    #NOT olidar !!! should print result if lidar is connected
+ros2 launch oradar_lidar ms200_scan.launch.py    #AGAIN NOT olidar !!! starts publishing lidar data in /scan (echo should work)
+
+ros2 launch rosbridge_server rosbridge_websocket_launch.xml    #starts a rosbridge server that you can log on e.g. with foxglove studio -> more: https://github.com/nodehubs/ldlidar_ros2
