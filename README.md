@@ -139,7 +139,7 @@ source install/setup.bash
 
 ## **Authors**
 - **Professor**
-    - Prof. Gabriel Gomez
+    - Prof. Gabriel Gomes
 - **Researcher**
     - Fernando Pulma
     - Gustav Martin Friede
