@@ -68,7 +68,7 @@ This project's goal is to control a robot to a specific path towards a given goa
 
 ## **Project Directory Structure**
 ```plaintext
-ros_workspace/
+rosmaster/
 ├── src/
 │   ├── sensor_interface/
 │   │   ├── launch/
