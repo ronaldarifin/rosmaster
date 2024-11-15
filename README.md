@@ -1,7 +1,7 @@
 # ROS 2 Project: Modular Robot Architecture
 
 ## **Overview**
-This ROS 2 project implements a modular architecture for robotic control, designed for flexibility, scalability, and ease of debugging. The system is built around three core packages:
+This project's goal is to control a robot to a specific path towards a given goal while updating its trajectory based on obstacles found along the way.
 
 1. **`sensor_interface`**: Handles data acquisition from the robot's sensors (MIPI Camera, Depth Camera, and LIDAR).
 2. **`trajectory_planner`**: Processes sensor data to perform SLAM, plan trajectories, and control the robot's movements.
@@ -117,7 +117,7 @@ ros_workspace/
 
 ### **Build the Workspace**
 ```bash
-cd ~/ros_workspace
+cd ~/rosmaster
 colcon build
 source install/setup.bash
 ```
@@ -136,3 +136,14 @@ source install/setup.bash
   ros2 launch utilities navigation_launch.py
   ```
 ---
+
+## **Authors**
+- **Professor**
+    - Prof. Gabriel Gomez
+- **Researcher**
+    - Fernando Pulma
+    - Gustav Martin Friede
+    - Haoyang Zhou
+    - Jasper Hu
+    - Jonathan Goenadibrata
+    - Wendy Cheng
