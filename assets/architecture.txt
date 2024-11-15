@@ -1,0 +1,41 @@
+ros_workspace/
+├── src/
+│   ├── sensor_interface/
+│   │   ├── launch/
+│   │   │   └── sensor_launch.py                # Launch file for all sensors
+│   │   ├── sensor_interface/
+│   │   │   ├── __init__.py
+│   │   │   ├── mipi_camera.py                  # MIPI Camera class
+│   │   │   ├── depth_camera.py                 # Depth Camera class
+│   │   │   └── lidar.py                        # LIDAR class
+│   │   ├── setup.py
+│   │   └── package.xml
+│   │
+│   ├── trajectory_planner/
+│   │   ├── launch/
+│   │   │   └── trajectory_launch.py            # Launch file for SLAM, trajectory, and control
+│   │   ├── robot_trajectory_planner/
+│   │   │   ├── __init__.py
+│   │   │   ├── slam.py                         # SLAM implementation
+│   │   │   ├── trajectory.py                   # Trajectory planning class
+│   │   │   └── robot_controls.py               # Robot control class
+│   │   ├── setup.py
+│   │   └── package.xml
+│   │
+│   ├── utilities/
+│   │   ├── launch/
+│   │   │   ├── navigation_launch.py            # Main launch file for the system
+│   │   │   └── simulation_launch.py            # Launch file for RViz simulation
+│   │   ├── utilities/
+│   │   │   ├── __init__.py
+│   │   │   ├── system_logger.py                # Logs data from all components
+│   │   │   ├── simulation.py                   # RViz simulation handler
+│   │   │   └── config_generator.py             # Handles `config.yaml` loading
+│   │   ├── config/
+│   │   │   └── config.yaml                     # Configuration for parameters, goals, etc.
+│   │   ├── setup.py
+│   │   └── package.xml
+│   │
+├── build/
+├── install/
+└── log/
