@@ -36,7 +36,7 @@ class TrivialTrajectory(TrajectoryPlanner):
         """
         Plan a trajectory that goes directly from start to goal.
         """
-        self.trajectory = [start, goal]
+        self.trajectory = np.array([start, goal])
 
 class AStarTrajectory(TrajectoryPlanner):
     """
@@ -50,6 +50,9 @@ class AStarTrajectory(TrajectoryPlanner):
         Plan a trajectory using the A* search algorithm.
         """
         self.trajectory = self._a_star_search(start, goal, self.map)
+
+    def _a_star_search(self, start, goal, map):
+        pass
 
 # Example usage
 if __name__ == "__main__":
