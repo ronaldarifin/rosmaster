@@ -1,58 +1,6 @@
+import numpy as np
+
 from slam import SLAM
-
-class RobotState:
-    def __init__(self):
-        self.position = {
-            "x": 0,
-            "y": 0,
-            "z": 0,
-            "w": 0,
-        }
-
-        self.velocity = {
-            "x": 0,
-            "y": 0,
-            "z": 0,
-            "w": 0,
-        }
-
-        self.acceleration = {
-            "x": 0,
-            "y": 0,
-            "z": 0,
-            "w": 0,
-        }
-
-    def set_position(self, x:float = None, y:float = None, z:float = None, w:float = None):
-        if x is not None:
-            self.position["x"] = x
-        if y is not None:
-            self.position["y"] = y
-        if z is not None:
-            self.position["z"] = z
-        if w is not None:
-            self.position["w"] = w    
-        
-    def set_velocity(self, x:float = None, y:float = None, z:float = None, w:float = None):
-        if x is not None:
-            self.velocity["x"] = x
-        if y is not None:
-            self.velocity["y"] = y
-        if z is not None:
-            self.velocity["z"] = z
-        if w is not None:
-            self.velocity["w"] = w     
-
-    def set_acceleration(self, x:float = None, y:float = None, z:float = None, w:float = None):
-        if x is not None:
-            self.acceleration["x"] = x
-        if y is not None:
-            self.acceleration["y"] = y
-        if z is not None:
-            self.acceleration["z"] = z
-        if w is not None:
-            self.acceleration["w"] = w 
-
 
 class TrajectoryPlanner:
     """
@@ -60,10 +8,10 @@ class TrajectoryPlanner:
     for trajectory planners.
     """
     def __init__(self, map: SLAM):
-        self.trajectory: list[RobotState] = []
+        self.trajectory: np.ndarray = np.array()
         self.map = map
 
-    def generate_trajectory(self, start:RobotState, goal:RobotState):
+    def generate_trajectory(self, start:np.ndarray, goal:np.ndarray):
         """
         Plan a trajectory from start to goal.
 
@@ -84,7 +32,7 @@ class TrivialTrajectory(TrajectoryPlanner):
     def __init__(self):
         pass
 
-    def generate_trajectory(self, start, goal):
+    def generate_trajectory(self, start:np.ndarray, goal:np.ndarray):
         """
         Plan a trajectory that goes directly from start to goal.
         """
@@ -97,7 +45,7 @@ class AStarTrajectory(TrajectoryPlanner):
     def __init__(self):
         pass
 
-    def generate_trajectory(self, start, goal):
+    def generate_trajectory(self, start:np.ndarray, goal:np.ndarray):
         """
         Plan a trajectory using the A* search algorithm.
         """
