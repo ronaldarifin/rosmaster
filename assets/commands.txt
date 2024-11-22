@@ -1,3 +1,18 @@
+# The following instructions/commands will allow you to SSH into RDK X3 Robot (assuming Ubuntu 20.04.6 and ROS2 Foxy is already installed)
+# First, ensure you are connected to the RDK-X3-ROBOT Wifi Network on your physical machine (password is 12345678)
+# Once connected to RDK-X3-ROBOT Wifi Network, open a terminal window in your Ubuntu Virtual Machine and enter the following command
+ssh root@192.168.8.88 
+
+# It will then prompt you to enter a password which is the following (Note the password will not be visible as you type)
+yahboom 
+
+# You have now SSH into the RDK X3 Robot, congratulations! 
+
+
+# To communicate with the Robot, change the Network settings in the VirtualBox Manager from "NAT" to "Bridged Adapter"
+
+export ROS_DOMAIN_ID=28 #ensure the domain ID from your VM is the same as the RDK X3 Robot, add this to your bashsrc
+
 sudo systemctl restart network-manager    #restarts network-manager (run if network-manager does not work)
 
 python3 joystick.py    #manually starts the car controls for wireless controller (in ~/sunriseRobot/app_SunriseRobot)
