@@ -1,3 +1,6 @@
+import numpy as np
+import heapq
+
 import rclpy
 from rclpy.node import Node
 from nav_msgs.msg import OccupancyGrid, Path
@@ -80,24 +83,90 @@ class Trajectory(Node):
 
     def generate_trajectory(self, map_msg: OccupancyGrid, goal_pose: PoseStamped) -> Path:
         """
-        Generates a trajectory based on the input map and goal.
-
+        Generates a trajectory using the A* algorithm based on the input map and goal.
         :param map_msg: The OccupancyGrid message.
         :param goal_pose: The PoseStamped message representing the goal.
         :return: A nav_msgs/Path message.
         """
+        # Parse OccupancyGrid into a 2D numpy array
+        width = map_msg.info.width
+        height = map_msg.info.height
+        resolution = map_msg.info.resolution
+        origin = map_msg.info.origin.position
+
+        grid = np.array(map_msg.data, dtype=np.int8).reshape((height, width))
+        grid = np.where(grid > 0, 1, 0)  # Convert to binary occupancy grid
+
+        # Transform start and goal into grid coordinates
+        start_x = int(-origin.x / resolution)
+        start_y = int(-origin.y / resolution)
+        goal_x = int((goal_pose.pose.position.x - origin.x) / resolution)
+        goal_y = int((goal_pose.pose.position.y - origin.y) / resolution)
+
+        # Plan the path
+        path_points = self._astar((start_y, start_x), (goal_y, goal_x), grid)
+
+        if not path_points:
+            self.get_logger().warn("A* algorithm could not find a path.")
+            return Path()
+
+        # Convert path to ROS Path message
         path = Path()
         path.header = map_msg.header
 
-        # TODO: Replace with actual algorithm to generate the path
-
-        # Add the goal as the last waypoint for demonstration
-        goal_waypoint = PoseStamped()
-        goal_waypoint.header = goal_pose.header
-        goal_waypoint.pose = goal_pose.pose
-        path.poses.append(goal_waypoint)
+        for (y, x) in path_points:
+            pose = PoseStamped()
+            pose.header = map_msg.header
+            pose.pose.position.x = x * resolution + origin.x
+            pose.pose.position.y = y * resolution + origin.y
+            path.poses.append(pose)
 
         return path
+
+    def _astar(start, goal, grid):
+        """
+        A* pathfinding algorithm implementation.
+        :param start: (x, y) tuple for the start position.
+        :param goal: (x, y) tuple for the goal position.
+        :param grid: 2D numpy array representing the occupancy grid (0: free, 1: obstacle).
+        :return: List of (x, y) tuples representing the path from start to goal.
+        """
+        def heuristic(a, b):
+            # Euclidean distance as heuristic
+            return ((a[0] - b[0])**2 + (a[1] - b[1])**2)**0.5
+
+        open_set = []
+        heapq.heappush(open_set, (0, start))
+        came_from = {}
+        g_score = {start: 0}
+        f_score = {start: heuristic(start, goal)}
+
+        while open_set:
+            _, current = heapq.heappop(open_set)
+
+            if current == goal:
+                # Reconstruct path
+                path = []
+                while current in came_from:
+                    path.append(current)
+                    current = came_from[current]
+                path.append(start)
+                return path[::-1]
+
+            for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                neighbor = (current[0] + dx, current[1] + dy)
+                if (0 <= neighbor[0] < grid.shape[0] and
+                        0 <= neighbor[1] < grid.shape[1] and
+                        grid[neighbor[0], neighbor[1]] == 0):
+                    tentative_g_score = g_score[current] + 1
+                    if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
+                        came_from[neighbor] = current
+                        g_score[neighbor] = tentative_g_score
+                        f_score[neighbor] = tentative_g_score + heuristic(neighbor, goal)
+                        heapq.heappush(open_set, (f_score[neighbor], neighbor))
+
+        return None  # No path found
+
 
 
 def main(args=None):
