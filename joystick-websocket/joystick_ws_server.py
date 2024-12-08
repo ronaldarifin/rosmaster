@@ -49,24 +49,13 @@ class WebSocketCmdVelNode(Node):
         await server.wait_closed()
 
 
-async def ros_spin_async(node):
-    """
-    Spin the ROS node to process callbacks.
-    """
-    while rclpy.ok():
-        rclpy.spin_once(node, timeout_sec=0.1)
-        await asyncio.sleep(0.1)  # Keep asyncio event loop active
-
-
 async def main_async():
-    """
-    Main async function to run both ROS 2 and WebSocket server.
-    """
+    # Initialize ROS 2 node
     rclpy.init()
     node = WebSocketCmdVelNode()
 
+    # Run WebSocket server and ROS 2 node together
     try:
-        # Run WebSocket server and ROS spin loop concurrently
         await asyncio.gather(
             node.websocket_server(),
             ros_spin_async(node),
@@ -76,12 +65,11 @@ async def main_async():
         rclpy.shutdown()
 
 
-def main():
-    """
-    Entry point for the ROS 2 server node.
-    """
-    asyncio.run(main_async())
+async def ros_spin_async(node):
+    while rclpy.ok():
+        rclpy.spin_once(node, timeout_sec=0.1)
+        await asyncio.sleep(0.1)  # Keep asyncio event loop active
 
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main_async())
