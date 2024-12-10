@@ -23,7 +23,7 @@ class MipiCameraNode(Node):
         self.timer = self.create_timer(0.033, self.publish_frame)  # Approx. 30 FPS
 
     def publish_frame(self):
-        frame = self.camera.get_frame()
+        ret, frame = self.camera.get_frame()
         if frame is not None:
             try:
                 # Convert the frame to a ROS Image message
