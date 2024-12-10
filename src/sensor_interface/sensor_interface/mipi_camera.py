@@ -14,6 +14,12 @@ class MipiCamera(Node):
         if not self.camera.isOpened():
             self.get_logger().error("Failed to open MIPI camera.")
             raise RuntimeError("Camera initialization failed")
+        
+        ret, frame = self.camera.read()
+        if ret:
+            self.camera.release()
+        else:
+            raise RuntimeError("Camera not released")
 
         # Create a ROS 2 publisher
         self.publisher = self.create_publisher(Image, '/camera/mipi/image_raw', 10)
@@ -24,8 +30,8 @@ class MipiCamera(Node):
 
     def publish_frame(self):
         try:
-            frame = self.camera.get_frame()  # Capture a frame from the camera
-            if frame is not None:
+            ret, frame = self.camera.read()  # Capture a frame from the camera
+            if ret:
                 # Convert the frame to a ROS Image message
                 image_msg = self.bridge.cv2_to_imgmsg(frame, encoding='bgr8')
                 self.publisher.publish(image_msg)
