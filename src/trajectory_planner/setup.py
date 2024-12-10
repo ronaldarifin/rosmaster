@@ -24,6 +24,7 @@ setup(
     entry_points={
         'console_scripts': [
             'slam = trajectory_planner.slam:main',
+            'robot_controls = trajectory_planner.robot_controls:main',
         ],
     },
 )

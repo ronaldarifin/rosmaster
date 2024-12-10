@@ -24,19 +24,13 @@ def generate_launch_description():
     # Add Mcnamu Driver Node
     mcnamu_driver_node = Node(
         package='yahboomcar_bringup',  # Replace with your package name if different
-        executable='Mcnamu_driver.py',  # Use the script file directly or the registered executable name
-        name='mcnamu_driver',
-        output='screen',
-        parameters=[
-            {'param_name': 'param_value'},  # Add parameters as needed
-        ]
-    )
+        executable='Mcnamu_driver',  # Use the script file directly or the registered executable name    
+        )
 
     pub_odom_tf_arg = DeclareLaunchArgument('pub_odom_tf', default_value='false',
                                             description='Whether to publish the tf from the original odom to the base_footprint')
     
 
-    
     # Base Node
     base_node = Node(
         package='yahboomcar_base_node',  # Replace with the appropriate package name
@@ -90,14 +84,13 @@ def generate_launch_description():
 
     # Combine everything into a single launch description
     return LaunchDescription([
-        # sensor_launch,
-        # mcnamu_driver_node,
-        # pub_odom_tf_arg,
-        # base_node,
-        # imu_filter_node,
-        # ekf_node,
-        # yahboom_joy_node,
-        # yahboom_description_node
+        sensor_launch,
+        mcnamu_driver_node,
+        pub_odom_tf_arg,
+        base_node,
+        imu_filter_node,
+        ekf_node,
+        yahboom_description_node
 
         # odometry_node,
         # navigation_node,

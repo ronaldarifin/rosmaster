@@ -4,7 +4,7 @@ import numpy as np
 from math import cos, sin, pi
 from typing import Optional
 
-from sensor_msgs.msg import LaserScan, PointCloud2
+from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import OccupancyGrid
 from geometry_msgs.msg import Pose
 
@@ -17,11 +17,11 @@ class SLAM(Node):
         
         self.maze = self._generate_static_maze(100, 100)
 
-        # Subscribe to /velodyne_points topic
+        # Subscribe to /scan topic
         self.create_subscription(
-            PointCloud2,
-            '/velodyne_points',
-            self.pointcloud_callback,
+            LaserScan,
+            '/scan',
+            self.lidar2d_callback,
             10
         )
 
@@ -29,10 +29,10 @@ class SLAM(Node):
         self.map_publisher = self.create_publisher(OccupancyGrid, '/map', 10)
         self.get_logger().info("SLAM node initialized, subscribed to '/scan', and publishing to '/map'.")
 
-    def pointcloud_callback(self, msg: PointCloud2) -> None:
-        """Callback to process PointCloud2 data and generate an OccupancyGrid map."""
+    def lidar2d_callback(self, msg: LaserScan) -> None:
+        """Callback to process LaserScan data and generate an OccupancyGrid map."""
         if not msg.data:
-            self.get_logger().warn("No data in PointCloud2 message.")
+            self.get_logger().warn("No data in LaserScan message.")
             return
 
         # Define map parameters
@@ -63,7 +63,7 @@ class SLAM(Node):
         self.map_publisher.publish(self.current_map)
         self.get_logger().info("Published updated map to '/map'.")
 
-    def _generate_map(self, occupancy_grid: np.ndarray, scan: PointCloud2) -> np.ndarray:
+    def _generate_map(self, occupancy_grid: np.ndarray, scan: LaserScan) -> np.ndarray:
         """Generate a random maze and update the occupancy grid."""
 
         
@@ -78,7 +78,7 @@ def main():
     slam_node = SLAM()
 
     try:
-        slam_node.get_logger().info("SLAM node is running. Subscribed to '/velodyne_points'.")
+        slam_node.get_logger().info("SLAM node is running. Subscribed to '/scan'.")
         rclpy.spin(slam_node)
     except KeyboardInterrupt:
         slam_node.get_logger().info("Shutting down SLAM node.")
