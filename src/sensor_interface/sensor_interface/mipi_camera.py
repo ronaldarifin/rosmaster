@@ -3,56 +3,52 @@ from rclpy.node import Node
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import cv2
-from SunriseRobotLib.mipi_camera import Mipi_Camera
+from SunriseRobotLib import Mipi_Camera
 
-class MipiCamera(Node):
-    def __init__(self, width=320, height=240, debug=False):
-        super().__init__('mipi_camera_publisher')
-        
-        # Initialize the camera
-        self.camera = Mipi_Camera(width=width, height=height, debug=debug)
-        if not self.camera.isOpened():
-            self.get_logger().error("Failed to open MIPI camera.")
-            raise RuntimeError("Camera initialization failed")
-        
-        ret, frame = self.camera.read()
-        if ret:
-            self.camera.release()
-        else:
-            raise RuntimeError("Camera not released")
-
-        # Create a ROS 2 publisher
-        self.publisher = self.create_publisher(Image, '/camera/mipi/image_raw', 10)
+class MipiCameraNode(Node):
+    def __init__(self):
+        super().__init__('mipi_camera_node')
+        self.publisher_ = self.create_publisher(Image, 'camera/image_raw', 10)
         self.bridge = CvBridge()
-        
-        # Set up a timer to capture and publish frames
-        self.timer = self.create_timer(0.1, self.publish_frame)  # Publish at 10 Hz
+
+        # Initialize the Mipi Camera
+        self.camera = Mipi_Camera(width=320, height=240, debug=False)
+        if self.camera.isOpened():
+            self.get_logger().info("Mipi Camera initialized successfully.")
+        else:
+            self.get_logger().error("Failed to initialize Mipi Camera.")
+            raise RuntimeError("Camera initialization failed.")
+
+        # Set up a timer to publish frames
+        self.timer = self.create_timer(0.033, self.publish_frame)  # Approx. 30 FPS
 
     def publish_frame(self):
-        try:
-            ret, frame = self.camera.read()  # Capture a frame from the camera
-            if ret:
+        frame = self.camera.get_frame()
+        if frame is not None:
+            try:
                 # Convert the frame to a ROS Image message
-                image_msg = self.bridge.cv2_to_imgmsg(frame, encoding='bgr8')
-                self.publisher.publish(image_msg)
-                self.get_logger().info("Published an image frame.")
-            else:
-                self.get_logger().warning("Received empty frame from the camera.")
-        except Exception as e:
-            self.get_logger().error(f"Error while capturing or publishing frame: {e}")
+                ros_image = self.bridge.cv2_to_imgmsg(frame, encoding="bgr8")
+                self.publisher_.publish(ros_image)
+                self.get_logger().info("Published a frame.")
+            except Exception as e:
+                self.get_logger().error(f"Error publishing frame: {e}")
+        else:
+            self.get_logger().warning("Failed to capture frame.")
 
     def __del__(self):
-        # Release the camera resources
+        # Clean up the camera when the node is destroyed
         self.camera.release()
+        self.get_logger().info("Mipi Camera released.")
 
 def main(args=None):
     rclpy.init(args=args)
+    node = MipiCameraNode()
     try:
-        mipi_camera_node = MipiCamera(width=640, height=480, debug=True)
-        rclpy.spin(mipi_camera_node)
+        rclpy.spin(node)
     except KeyboardInterrupt:
         pass
     finally:
+        node.destroy_node()
         rclpy.shutdown()
 
 if __name__ == '__main__':
