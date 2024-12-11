@@ -29,7 +29,7 @@ class MipiCameraNode(Node):
                 # Convert the frame to a ROS Image message
                 ros_image = self.bridge.cv2_to_imgmsg(frame, encoding="bgr8")
                 self.publisher_.publish(ros_image)
-                self.get_logger().info("Published a frame.")
+                # self.get_logger().info("Published a frame.")
             except Exception as e:
                 self.get_logger().error(f"Error publishing frame: {e}")
         else:

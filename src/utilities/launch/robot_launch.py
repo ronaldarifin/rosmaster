@@ -58,11 +58,11 @@ def generate_launch_description():
          '/ekf.launch.py'])
       )
  
-    # yahboom_joy_node = IncludeLaunchDescription(
-    #     PythonLaunchDescriptionSource([os.path.join(
-    #      get_package_share_directory('yahboomcar_ctrl'), 'launch'),
-    #      '/yahboomcar_joy_launch.py'])
-    # )
+    yahboom_joy_node = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([os.path.join(
+         get_package_share_directory('yahboomcar_ctrl'), 'launch'),
+         '/yahboomcar_joy_launch.py'])
+    )
     
     yahboom_description_node = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(
@@ -90,8 +90,8 @@ def generate_launch_description():
         base_node,
         imu_filter_node,
         ekf_node,
-        yahboom_description_node
-
+        yahboom_description_node,
+        yahboom_joy_node
         # odometry_node,
         # navigation_node,
     ])
